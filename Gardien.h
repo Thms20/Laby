@@ -15,29 +15,55 @@ private:
 	int nb_update = 0;
 public:
 	Gardien (Labyrinthe* l, const char* modele) : Mover (120, 80, l, modele)
-	{}
+	{_angle = 270;}
 
 	// mon gardien pense tr�s mal!
 	//void update (void) {};
 	void update () {
-		if(nb_update == 150) {
-			changeAngle();
+	
+
+
+	//	if(bo) { // juste pour tester une fois le find, à enlever pour après
+		//	find();
+		//	bo = false;
+	//	}
+
+	if(nb_update == 1) {
+			if(verifAvancement(_angle)) {
+				switch(_angle) {
+					case 0:
+						_y += 10/Environnement::scale;
+						break;
+					case 90:
+						_x -= 10/Environnement::scale;
+						break;
+					case 180:
+						_y -= 10/Environnement::scale;
+						break;
+					case 270:
+						_x += 10/Environnement::scale;
+						break;
+				}
+			}
+			else {
+				changeAngle();
+				cout << _angle << endl;
+			}
 			nb_update = 0;
 		}
 		else nb_update++;
-
-
-		if(bo) { // juste pour tester une fois le find, à enlever pour après
-			find();
-			bo = false;
-		}
 
 
 
 	}
 
 	// et ne bouge pas!
-	bool move (double dx, double dy) { return false; }
+	bool move (double dx, double dy) {
+		 if(_l->data(dx / Environnement::scale, dy / Environnement::scale) == 1) {
+			return false;
+		}
+		return true;
+	}
 
 
 	// ne sait pas tirer sur un ennemi.
@@ -97,11 +123,16 @@ public:
 
 		if (newY >= newY) { // On regarde si la longueur entre le chasseur et le gardien est plus grand en x ou y sur le nouveau repère tout simplement
 			facteur = (ychasseur > y) ? 1.0f : -1.0f;
-			while ((facteur > 0 && dy < ychasseur) || (facteur < 0 && dy > ychasseur)) {
+			while ((facteur > 0 && dy < ychasseur) || (facteur < 0 && dy > ychasseur)) { // Probleme quand l'abscisse ou l'ordonnée sont égales
 				dy += facteur * pas;
 				dx = a * dy + b;
 				objet = _l->data(int(dx), int(dy)); // pour voir ce qu'il y a dans la grille à une case donnée
-			//	std::cout << int(dx) << " " << int(dy) << std::endl;
+				cout << (int)objet << " " << dx << " " << dy << endl;
+
+				if((int) objet == 1) {
+					bo = false;
+					return 0;
+				}
 			}
 		}
 		else {
@@ -110,14 +141,35 @@ public:
 				dx += facteur * pas; // On se rapproche en abscisse du chasseur
 				dy = my * dx + iy; // pareil en ordonné mais tout en étant sur notre droite (du gardien vers le chasseur)
 				objet = _l->data(int(dx), int(dy));
-			//	std::cout << int(dx) << " " << int(dy) << std::endl;
+				cout << (int)objet << " " << dx << " " << dy << endl;
+
+				if((int) objet == 1) {
+					bo = false;
+					return 0;
+				}
         	}
    		}
 
-
-
-
 		return true;
+	}
+
+
+	bool verifAvancement(int angle) {
+		switch(angle) {
+			case 0:
+				return move(_x, _y + 5);
+				break;
+			case 90:
+				return move(_x - 5, _y);
+				break;
+			case 180:
+				return move(_x, _y - 5);
+				break;
+			case 270:
+				return move(_x + 5, _y);
+				break;
+		}
+		
 	}
 
 };
