@@ -17,45 +17,24 @@ public:
 	Gardien (Labyrinthe* l, const char* modele) : Mover (120, 80, l, modele)
 	{_angle = 270;}
 
+
+
 	// mon gardien pense tr�s mal!
-	//void update (void) {};
 	void update () {
-	
 
-
-	//	if(bo) { // juste pour tester une fois le find, à enlever pour après
-		//	find();
-		//	bo = false;
-	//	}
-
-	if(nb_update == 1) {
-			if(verifAvancement(_angle)) {
-				switch(_angle) {
-					case 0:
-						_y += 10/Environnement::scale;
-						break;
-					case 90:
-						_x -= 10/Environnement::scale;
-						break;
-					case 180:
-						_y -= 10/Environnement::scale;
-						break;
-					case 270:
-						_x += 10/Environnement::scale;
-						break;
-				}
+		if(nb_update == 0) {
+			if(find()) {
+				attack();
 			}
-			else {
-				changeAngle();
-				cout << _angle << endl;
-			}
+			else patrouille();
+
 			nb_update = 0;
 		}
 		else nb_update++;
 
 
 
-	}
+}
 
 	// et ne bouge pas!
 	bool move (double dx, double dy) {
@@ -121,17 +100,17 @@ public:
 		float facteur;
 
 
-		if (newY >= newY) { // On regarde si la longueur entre le chasseur et le gardien est plus grand en x ou y sur le nouveau repère tout simplement
+		if(dx == xchasseur || dy == ychasseur) return false;
+
+		if (newY >= newX) { // On regarde si la longueur entre le chasseur et le gardien est plus grand en x ou y sur le nouveau repère tout simplement
 			facteur = (ychasseur > y) ? 1.0f : -1.0f;
 			while ((facteur > 0 && dy < ychasseur) || (facteur < 0 && dy > ychasseur)) { // Probleme quand l'abscisse ou l'ordonnée sont égales
 				dy += facteur * pas;
 				dx = a * dy + b;
 				objet = _l->data(int(dx), int(dy)); // pour voir ce qu'il y a dans la grille à une case donnée
-				cout << (int)objet << " " << dx << " " << dy << endl;
 
 				if((int) objet == 1) {
-					bo = false;
-					return 0;
+					return false;
 				}
 			}
 		}
@@ -141,14 +120,18 @@ public:
 				dx += facteur * pas; // On se rapproche en abscisse du chasseur
 				dy = my * dx + iy; // pareil en ordonné mais tout en étant sur notre droite (du gardien vers le chasseur)
 				objet = _l->data(int(dx), int(dy));
-				cout << (int)objet << " " << dx << " " << dy << endl;
 
 				if((int) objet == 1) {
-					bo = false;
-					return 0;
+					//bo = false;
+					return false;
 				}
         	}
    		}
+
+		float angle = atan(sx / sy);
+		int rapport = (sy > 0) ? 0 : 180;
+		int degree = int(angle * -180.0f / M_PI);
+		_angle = degree + rapport;
 
 		return true;
 	}
@@ -171,6 +154,80 @@ public:
 		}
 		
 	}
+
+
+void patrouille() {
+	if(verifAvancement(_angle)) {
+		switch(_angle) {
+			case 0:
+				_y += 10/Environnement::scale;
+				break;
+			case 90:
+				_x -= 10/Environnement::scale;
+				break;
+			case 180:
+				_y -= 10/Environnement::scale;
+				break;
+			case 270:
+				_x += 10/Environnement::scale;
+				break;
+		}
+	}
+	else {
+		changeAngle();
+	}
+}
+
+void attack() {
+		float xchasseur, ychasseur, x, y;
+
+		xchasseur = _l->_guards[0]->_x/Environnement::scale;
+		ychasseur = _l->_guards[0]->_y/Environnement::scale;
+
+		x = _x/Environnement::scale;
+		y = _y/Environnement::scale;
+
+
+		float sx, sy;
+		
+		sx = xchasseur - x;
+		sy = ychasseur - y;
+
+		float a, b;
+		a = sx/sy;
+		b = x - a * y;
+
+		float my, iy;
+		my = sy / sx;
+    	iy = y - my * x;
+
+		float pas = 0.05;
+
+		float dx = x;
+		float dy = y;
+
+
+		float newX = abs(sx);
+		float newY = abs(sy);
+
+		float facteur;
+
+
+		if (newY >= newX) {
+			facteur = (ychasseur > y) ? 1.0f : -1.0f;
+			dy += facteur * pas;
+			_y = dy * Environnement::scale;
+			_x = (a * dy + b) * Environnement::scale;
+
+		}
+		else {
+			facteur = (xchasseur > x) ? 1.0f : -1.0f;
+			dx += facteur * pas;
+			_x = dx * Environnement::scale;
+			_y = (my * dx + iy) * Environnement::scale;
+   		}
+}
+
 
 };
 
