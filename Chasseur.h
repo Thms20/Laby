@@ -9,6 +9,7 @@ class Labyrinthe;
 
 class Chasseur : public Mover {
 private:
+	int hp = 50;
 	// accepte ou non un deplacement.
 	bool move_aux (double dx, double dy);
 public:
@@ -34,6 +35,8 @@ public:
 	void right_click (bool shift, bool control);
 	// Test si le joueur a gagné
 	void gagner();
+	// Chasseur perd de la vie
+	void perdVie();
 };
 
 #endif

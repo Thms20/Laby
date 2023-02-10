@@ -1,4 +1,5 @@
 #include "Chasseur.h"
+#include "Gardien.h"
 #include <stdio.h>
 #include <iostream>
 #include <fstream>
@@ -46,6 +47,24 @@ bool Chasseur::process_fireball (float dx, float dy)
 	float	x = (_x - _fb -> get_x ()) / Environnement::scale;
 	float	y = (_y - _fb -> get_y ()) / Environnement::scale;
 	float	dist2 = x*x + y*y;
+
+// ------------------
+// Test si un gardien est touché par une boule de feu
+	float dist;
+	for(int i = 1; i < _l->_nguards; i++) {
+		Gardien* guard = (Gardien*) (_l->_guards[i]);
+		dist = sqrt((guard->_x - _fb -> get_x ())/Environnement::scale * (guard->_x - _fb -> get_x ())/Environnement::scale + 
+					(guard->_y - _fb -> get_y ())/Environnement::scale * (guard->_y - _fb -> get_y ())/Environnement::scale);
+
+		if(dist < 1) {
+			guard->etreToucheParBdf();
+			return false;
+		}
+	}
+// ---------------------
+
+
+
 	// on bouge que dans le vide!
 	if (EMPTY == _l -> data ((int)((_fb -> get_x () + dx) / Environnement::scale),
 							 (int)((_fb -> get_y () + dy) / Environnement::scale)))
@@ -69,8 +88,6 @@ bool Chasseur::process_fireball (float dx, float dy)
 
 void Chasseur::fire (int angle_vertical)
 {
-//	std::cout << sqrt((Mover::_l->_treasor._x - (_x - float(Mover::_l->scale)/2)/float(Mover::_l->scale))*(Mover::_l->_treasor._x - (_x - float(Mover::_l->scale)/2)/float(Mover::_l->scale)) + 
-//	(Mover::_l->_treasor._y  - (_y - float(Mover::_l->scale)/2)/float(Mover::_l->scale)) * (Mover::_l->_treasor._y - (_y - float(Mover::_l->scale)/2)/float(Mover::_l->scale))) << std::endl;
 	message ("Woooshh...");
 	_hunter_fire -> play ();
 	_fb -> init (/* position initiale de la boule */ _x, _y, 10.,
@@ -102,4 +119,13 @@ void Chasseur::gagner() {
 	<= 2) {
 		partie_terminee(true);
 	}
+}
+
+/*
+* Chasseur qui perd de la vie
+*/
+void Chasseur::perdVie() {
+	this->hp -= 5;
+
+	if(hp <= 0) partie_terminee(false);
 }
