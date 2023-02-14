@@ -13,8 +13,8 @@ class Labyrinthe;
 class Gardien : public Mover {
 private:
 	int nb_update = 0;
-	int hp = 20; // Vie du gardien
 public:
+	int hp = 20; // Vie du gardien
 	Gardien (Labyrinthe* l, const char* modele) : Mover (120, 80, l, modele)
 	{_angle = 270;}
 

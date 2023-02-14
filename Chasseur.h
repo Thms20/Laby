@@ -12,6 +12,7 @@ private:
 	int hp = 50;
 	// accepte ou non un deplacement.
 	bool move_aux (double dx, double dy);
+	bool finPartie = false;
 public:
 	// les sons.
 	static Sound*	_hunter_fire;	// bruit de l'arme du chasseur.

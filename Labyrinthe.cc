@@ -114,6 +114,8 @@ Labyrinthe::Labyrinthe(char* fluxname) {
 
                 // boites
                 if (c == 'X') boxesPositions.push_back({i, j});
+                 // marks
+                else if (c == 'M') marksPositions.push_back({i, j});
                 // affiches
                 else if (c >= 'a' && c <= 'z') {
                     Position position = {i, j};
@@ -277,12 +279,27 @@ Labyrinthe::Labyrinthe(char* fluxname) {
             i++;
         }
 
-        /*
         // les marques
         i = 0;
         for (auto const& mark : marksPositions) {
-           //
-        } */
+            _marks[i]._x = mark.x;
+            _marks[i]._y = mark.y;
+            _marks[i]._ntex = 0;
+            _data[_marks [i]._x][_marks [i]._y] = 0;
+            
+            if (i % 2 == 0) {
+                char tmp[256];
+                snprintf(tmp, sizeof(tmp), "%s/%s", texture_dir, "p2.jpg");
+                _marks[i]._ntex = wall_texture(tmp);
+            }
+            else if (i % 3 == 0) {
+                char tmp[256];
+                snprintf(tmp, sizeof(tmp), "%s/%s", texture_dir, "p2.png");
+                _marks[i]._ntex = wall_texture(tmp);
+            }
+            
+            i++;
+        }
         
         // le chasseur
         i = 0;

@@ -11,7 +11,6 @@
 /*
  *	Tente un deplacement.
  */
-
 bool Chasseur::move_aux (double dx, double dy)
 {
 	if (EMPTY == _l -> data ((int)((_x + dx) / Environnement::scale),
@@ -19,6 +18,26 @@ bool Chasseur::move_aux (double dx, double dy)
 	{
 		_x += dx;
 		_y += dy;
+        
+        // si position == posiion d'une marque -> tlportation sur une marque alatoire
+        bool teleportation = false;
+        int j = 0;
+        for (int i = 0; i < _l -> _nmarks; i++) {
+            if (_l -> _marks [i]._x == (int)(_x/Environnement::scale) && _l -> _marks [i]._y== (int)(_y/Environnement::scale)) {
+                teleportation = true;
+                j = i;
+                break;
+            }
+        }
+        
+        if (teleportation) {
+            // choix alatoire de la position
+            int i = rand() % (_l -> _nmarks);
+            if (j == i) {if (j == 0) i = 1; else i = j - 1;}
+            _x = _l -> _marks [i]._x*Environnement::scale;
+            _y = _l -> _marks [i]._y*Environnement::scale;
+        }
+
 		return true;
 	}
 	return false;
@@ -53,12 +72,14 @@ bool Chasseur::process_fireball (float dx, float dy)
 	float dist;
 	for(int i = 1; i < _l->_nguards; i++) {
 		Gardien* guard = (Gardien*) (_l->_guards[i]);
-		dist = sqrt((guard->_x - _fb -> get_x ())/Environnement::scale * (guard->_x - _fb -> get_x ())/Environnement::scale + 
-					(guard->_y - _fb -> get_y ())/Environnement::scale * (guard->_y - _fb -> get_y ())/Environnement::scale);
+		if(guard->hp > 0) {
+			dist = sqrt((guard->_x - _fb -> get_x ())/Environnement::scale * (guard->_x - _fb -> get_x ())/Environnement::scale + 
+						(guard->_y - _fb -> get_y ())/Environnement::scale * (guard->_y - _fb -> get_y ())/Environnement::scale);
 
-		if(dist < 1) {
-			guard->etreToucheParBdf();
-			return false;
+			if(dist < 1) {
+				guard->etreToucheParBdf();
+				return false;
+			}
 		}
 	}
 // ---------------------
@@ -117,7 +138,10 @@ void Chasseur::gagner() {
 	if( sqrt((Mover::_l->_treasor._x - (_x - float(Mover::_l->scale)/2)/float(Mover::_l->scale))*(Mover::_l->_treasor._x - (_x - float(Mover::_l->scale)/2)/float(Mover::_l->scale)) + 
 	(Mover::_l->_treasor._y  - (_y - float(Mover::_l->scale)/2)/float(Mover::_l->scale)) * (Mover::_l->_treasor._y - (_y - float(Mover::_l->scale)/2)/float(Mover::_l->scale))) 
 	<= 2) {
-		partie_terminee(true);
+		if(!finPartie) {
+			finPartie = true;
+			partie_terminee(true);
+		}
 	}
 }
 
@@ -127,5 +151,8 @@ void Chasseur::gagner() {
 void Chasseur::perdVie() {
 	this->hp -= 5;
 
-	if(hp <= 0) partie_terminee(false);
+	if(hp <= 0 && finPartie == false) {
+		finPartie = true;
+		partie_terminee(false);
+	}
 }
