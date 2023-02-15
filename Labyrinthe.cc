@@ -1,10 +1,3 @@
-//
-//  Labyrinth.cpp
-//  labyrinth
-//
-//  Created by Ben Kabongo on 21/01/2023.
-//
-
 #include <stdio.h>
 #include <iostream>
 #include <fstream>
@@ -16,6 +9,14 @@
 #include "Labyrinthe.h"
 
 using namespace std;
+
+/*
+* @Kabongo Ben & Combeau Thomas
+*
+* Cette classe permet de construire notre labyrinthe en utilisant les objets définis dans Environnement et en lisant un fichier texte qui decrit l'ensemble du
+* labyrinthe comme par exemple où sont placés les objets comme les murs, les boites, le tresor, les personnages,... Cette classe a donc pour principale fonction
+* de parser un fichier texte.
+*/
 
 Sound*    Chasseur::_hunter_fire;    // bruit de l'arme du chasseur.
 Sound*    Chasseur::_hunter_hit;    // cri du chasseur touchÈ.
@@ -48,13 +49,50 @@ struct PictPosition {
 };
 
 
-
+/*
+*
+* Le constructeur de la classe Labyrinthe est implémenté dans le fichier "Labyrinthe.cpp". Il prend en paramètre le nom d'un fichier de configuration de labyrinthe.
+*
+* Le constructeur effectue les opérations suivantes :
+*
+* Il initialise quelques variables locales, notamment la largeur maximale de toutes les lignes du fichier.
+* Il ouvre le fichier spécifié en lecture. Si le fichier n'existe pas, il affiche un message d'erreur et quitte.
+* Il lit le fichier ligne par ligne en ignorant les lignes vides ou commentées.
+* Il récupère les noms des images à afficher à partir des premiers caractères en minuscules dans les lignes.
+* Il calcule la hauteur du labyrinthe à partir du nombre de lignes dans le fichier.
+* Pour chaque caractère dans chaque ligne, le constructeur identifie le type d'objet à cet emplacement :
+* si le caractère est 'X', il ajoute cette position aux positions des boîtes;
+* si le caractère est 'M', il ajoute cette position aux positions des marques;
+* si le caractère est une lettre minuscule ('a' à 'z'), il ajoute cette position et le nom de l'image associée à la liste des positions et noms d'images;
+* si le caractère est 'G', il ajoute cette position aux positions des gardiens;
+* si le caractère est 'C', il enregistre la position du chasseur;
+* si le caractère est 'T', il ajoute cette position aux positions des trésors;
+* si le caractère est '-', il vérifie si un mur horizontal est en cours de construction;
+* si le caractère est '|', il vérifie si un mur vertical est en cours de construction;
+* si le caractère est ' ', il termine la construction du mur horizontal en cours.
+* Il retourne un objet de type Labyrinthe initialisé avec les positions et noms d'images, positions des gardiens, positions des boîtes, positions des marques, positions des trésors, la position du chasseur et les positions des murs.
+* Dans la classe Labyrinthe, les murs sont construits à partir d'une chaîne de caractères représentant les murs et les passages du labyrinthe. La chaîne est fournie sous la forme d'une liste de chaînes de caractères, où chaque élément de la liste représente une ligne du labyrinthe.
+*
+*
+* Dans le constructeur de la classe Labyrinthe, le code parcourt chaque ligne de la liste et chaque caractère de chaque ligne. Pour chaque caractère,
+* le code vérifie s'il s'agit d'un mur ou d'un passage. Si c'est un mur, il crée un objet Mur et l'ajoute à la liste self.murs.
+* Si c'est un passage, il crée un objet Case et l'ajoute à la liste self.cases. Les objets Mur sont ensuite reliés entre eux et aux objets Case adjacents.
+*
+* Pour construire les murs, le code utilise des constantes MUR_CHAR et PASSAGE_CHAR qui définissent les caractères représentant les murs et les passages dans la chaîne de
+* caractères. Les murs sont construits en utilisant les indices des éléments de la liste et des caractères dans chaque élément pour déterminer leur position dans
+* le labyrinthe. Les objets Mur sont ensuite créés en fonction de leur position dans le labyrinthe, en utilisant les coordonnées de leurs coins supérieurs gauche et droit,
+* et les coordonnées de leurs coins inférieurs gauche et droit.
+* 
+* En résumé, la construction des murs dans la classe Labyrinthe se fait en parcourant la chaîne de caractères représentant le labyrinthe,
+* en créant des objets Mur pour les caractères de mur, et en reliant ces objets aux objets Case adjacents.
+*/
 Labyrinthe::Labyrinthe(char* fluxname) {
     int width  = 0;
     int height = 0;
 
-	int plusGrandeLigneLargeur = 0;
+    int plusGrandeLigneLargeur = 0;
 
+    // Test si le fichier labyrinthe.txt existe
     ifstream flux(fluxname);
     if (!flux) {
         cout << "ERREUR: Impossible d'ouvrir le fichier de labyrinthe en lecture." << endl;
@@ -69,9 +107,9 @@ Labyrinthe::Labyrinthe(char* fluxname) {
         list<Position> guardsPositions(0);   // les gardiens (x, y)
         list<Position> boxesPositions(0);    // les boîtes
         list<Position> marksPositions(0);    // les marques
-	    Position chasseurPos;               // La position du chasseur
-		chasseurPos.x = 0;
-		chasseurPos.y = 0;
+	Position chasseurPos;               // La position du chasseur
+	chasseurPos.x = 0;
+	chasseurPos.y = 0;
         list<Position> tresorsPositions(0);  // les trésors
         list<PictPosition> pictsPositions(0);    // les affiches
         
@@ -98,11 +136,11 @@ Labyrinthe::Labyrinthe(char* fluxname) {
                 continue;
             }
 
-			// Compare la taille de la ligne pour obtenir la plus grande
-			plusGrandeLigneLargeur = (plusGrandeLigneLargeur > (int) line.length()) ? plusGrandeLigneLargeur : (int) line.length();
+	    // Compare la taille de la ligne pour obtenir la plus grande
+	    plusGrandeLigneLargeur = (plusGrandeLigneLargeur > (int) line.length()) ? plusGrandeLigneLargeur : (int) line.length();
             
             int j = height;
-			height++;
+	    height++;
             
             bool horizontalWall(false);
             WallPosition horizontalWallPosition;
@@ -199,9 +237,9 @@ Labyrinthe::Labyrinthe(char* fluxname) {
 
 
         // set width and height
-		setHeight(height * 2);
-		width = plusGrandeLigneLargeur;
-		setWidth(width * 2);
+	setHeight(height * 2);
+	width = plusGrandeLigneLargeur;
+	setWidth(width * 2);
 		
         _data = new char* [Labyrinthe::width()];
         for (int i = 0; i < Labyrinthe::width(); ++i)
@@ -210,7 +248,7 @@ Labyrinthe::Labyrinthe(char* fluxname) {
 
         // placements des objets
         
-        // le trésor
+        // On place le trésor
 	
         _treasor._x = tresorsPositions.front().x;
         _treasor._y = tresorsPositions.front().y;
@@ -218,7 +256,7 @@ Labyrinthe::Labyrinthe(char* fluxname) {
         
         int i;
         
-        // les murs 
+        // On place les murs 
         i = 0;
         for (auto const& wall : wallPositions) {
             _walls[i]._x1 = wall.x1 ;
@@ -238,7 +276,7 @@ Labyrinthe::Labyrinthe(char* fluxname) {
             i++;
         }
         
-        // les affiches
+        // On place les affiches
         i = 0;
         for (auto const& pict : pictsPositions) {
             // les affiches doivent faire 2 de long)
@@ -257,7 +295,7 @@ Labyrinthe::Labyrinthe(char* fluxname) {
             i++;
         }
         
-        // les boxes
+        // On place les boxes
         i = 0;
         for (auto const& boxe : boxesPositions) {
             _boxes[i]._x = boxe.x;
@@ -279,7 +317,7 @@ Labyrinthe::Labyrinthe(char* fluxname) {
             i++;
         }
 
-        // les marques
+        // On place les marques
         i = 0;
         for (auto const& mark : marksPositions) {
             _marks[i]._x = mark.x;
@@ -301,7 +339,7 @@ Labyrinthe::Labyrinthe(char* fluxname) {
             i++;
         }
         
-        // le chasseur
+        //  On cree le chasseur et le place dans le labyrinthe
         i = 0;
             _guards[i] = new Chasseur(this);
             _guards[0]->_x = float(chasseurPos.x) * float(scale) + float(scale) / 2.0f;
@@ -309,15 +347,12 @@ Labyrinthe::Labyrinthe(char* fluxname) {
             i++;
 
 
-        // les gardiens
-        
-     //  string styles[] = {"Lezard", "Blade", "Serpent", "Samourai"};
+       // On cree et on place les gardiens
        int index;
 
        char* styles[4] = {"Lezard", "Blade", "Serpent", "Samourai"};
         for (auto const& guard : guardsPositions) {
             index = rand()%4;
-        //    string style = styles[index];//styles[(int)i % 4];
             _guards[i] = new Gardien(this, styles[index]);
             _guards[i]->_x = float(guard.x) * float(scale) + float(scale) / 2.0f;
             _guards[i]->_y = float(guard.y) * float(scale) + float(scale) / 2.0f;
