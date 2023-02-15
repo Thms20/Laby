@@ -66,7 +66,7 @@ struct PictPosition {
 * si le caractère est une lettre minuscule ('a' à 'z'), il ajoute cette position et le nom de l'image associée à la liste des positions et noms d'images;
 * si le caractère est 'G', il ajoute cette position aux positions des gardiens;
 * si le caractère est 'C', il enregistre la position du chasseur;
-* si le caractère est 'T', il ajoute cette position aux positions des trésors;
+* si le caractère est 'T', il enregistre la position du trésor;
 * si le caractère est '-', il vérifie si un mur horizontal est en cours de construction;
 * si le caractère est '|', il vérifie si un mur vertical est en cours de construction;
 * si le caractère est ' ', il termine la construction du mur horizontal en cours.
