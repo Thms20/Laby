@@ -9,8 +9,8 @@
 #include <cmath>
 
 /**
-@Combeau Thomas & Kabongo Ben
-Classe chasseur qui implémente les fonctions définies dans chasseur.h.
+* @Combeau Thomas & Kabongo Ben
+* Classe chasseur qui implémente les fonctions définies dans chasseur.h.
 */
 
 /*
