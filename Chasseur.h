@@ -5,13 +5,20 @@
 #include "Mover.h"
 #include "Sound.h"
 
+/**
+@Combeau Thomas & Kabongo Ben
+Classe header du chasseur, ici on définie les entêtes de fonctions et le constructeur du chasseur.
+*/
+
 class Labyrinthe;
 
 class Chasseur : public Mover {
 private:
+	// Vie de départ du chasseur.
 	int hp = 50;
 	// accepte ou non un deplacement.
 	bool move_aux (double dx, double dy);
+	// Du point de vue de chasseur on peut savoir si la partie est finie, cela permet de stopper toutes les interactions possibles du chasseur.
 	bool finPartie = false;
 public:
 	// les sons.
