@@ -8,8 +8,14 @@
 #include <string>
 #include <cmath>
 
+/**
+@Combeau Thomas & Kabongo Ben
+Classe chasseur qui implémente les fonctions définies dans chasseur.h.
+*/
+
 /*
- *	Tente un deplacement.
+ *	Tente un deplacement et test aussi si le chasseur passe par une case où il y a une mark au sol. Si c'est
+ *	le cas alors le chasseur se téléporte à une autre mark aléatoirement parmi celles dans le labyrinthe.
  */
 bool Chasseur::move_aux (double dx, double dy)
 {
@@ -19,11 +25,11 @@ bool Chasseur::move_aux (double dx, double dy)
 		_x += dx;
 		_y += dy;
         
-        // si position == posiion d'une marque -> tlportation sur une marque alatoire
+        // si position == position d'une marque -> teleportation sur une marque aleatoire
         bool teleportation = false;
         int j = 0;
         for (int i = 0; i < _l -> _nmarks; i++) {
-            if (_l -> _marks [i]._x == (int)(_x/Environnement::scale) && _l -> _marks [i]._y== (int)(_y/Environnement::scale)) {
+            if (_l -> _marks [i]._x == (int)(_x/Environnement::scale) && _l -> _marks [i]._y == (int)(_y/Environnement::scale)) {
                 teleportation = true;
                 j = i;
                 break;
@@ -31,7 +37,7 @@ bool Chasseur::move_aux (double dx, double dy)
         }
         
         if (teleportation) {
-            // choix alatoire de la position
+            // choix aleatoire de la position
             int i = rand() % (_l -> _nmarks);
             if (j == i) {if (j == 0) i = 1; else i = j - 1;}
             _x = _l -> _marks [i]._x*Environnement::scale;
@@ -57,7 +63,8 @@ Chasseur::Chasseur (Labyrinthe* l) : Mover (100, 80, l, 0)
 }
 
 /*
- *	Fait bouger la boule de feu (ceci est une exemple, � vous de traiter les collisions sp�cifiques...)
+ *	Fait bouger la boule de feu et test si la boule de feu touche un gardien en regardant la distance entre la boule de feu et chaque gardien,
+ *	si c'est le cas, le gardien perd de la vie. 
  */
 
 bool Chasseur::process_fireball (float dx, float dy)
@@ -72,7 +79,7 @@ bool Chasseur::process_fireball (float dx, float dy)
 	float dist;
 	for(int i = 1; i < _l->_nguards; i++) {
 		Gardien* guard = (Gardien*) (_l->_guards[i]);
-		if(guard->hp > 0) {
+		if(guard->hp > 0) { // Ce test permet que si le gardien meurt, il n'arrete plus les boules de feu.
 			dist = sqrt((guard->_x - _fb -> get_x ())/Environnement::scale * (guard->_x - _fb -> get_x ())/Environnement::scale + 
 						(guard->_y - _fb -> get_y ())/Environnement::scale * (guard->_y - _fb -> get_y ())/Environnement::scale);
 
@@ -112,7 +119,7 @@ void Chasseur::fire (int angle_vertical)
 	message ("Woooshh...");
 	_hunter_fire -> play ();
 	_fb -> init (/* position initiale de la boule */ _x, _y, 10.,
-				 /* angles de vis�e */ angle_vertical, _angle);
+				 /* angles de visee */ angle_vertical, _angle);
 }
 
 /*
