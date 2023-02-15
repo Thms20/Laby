@@ -70,21 +70,15 @@ struct PictPosition {
 * si le caractère est '-', il vérifie si un mur horizontal est en cours de construction;
 * si le caractère est '|', il vérifie si un mur vertical est en cours de construction;
 * si le caractère est ' ', il termine la construction du mur horizontal en cours.
-* Il retourne un objet de type Labyrinthe initialisé avec les positions et noms d'images, positions des gardiens, positions des boîtes, positions des marques, positions des trésors, la position du chasseur et les positions des murs.
-* Dans la classe Labyrinthe, les murs sont construits à partir d'une chaîne de caractères représentant les murs et les passages du labyrinthe. La chaîne est fournie sous la forme d'une liste de chaînes de caractères, où chaque élément de la liste représente une ligne du labyrinthe.
-*
-*
-* Dans le constructeur de la classe Labyrinthe, le code parcourt chaque ligne de la liste et chaque caractère de chaque ligne. Pour chaque caractère,
-* le code vérifie s'il s'agit d'un mur ou d'un passage. Si c'est un mur, il crée un objet Mur et l'ajoute à la liste self.murs.
-* Si c'est un passage, il crée un objet Case et l'ajoute à la liste self.cases. Les objets Mur sont ensuite reliés entre eux et aux objets Case adjacents.
-*
-* Pour construire les murs, le code utilise des constantes MUR_CHAR et PASSAGE_CHAR qui définissent les caractères représentant les murs et les passages dans la chaîne de
-* caractères. Les murs sont construits en utilisant les indices des éléments de la liste et des caractères dans chaque élément pour déterminer leur position dans
-* le labyrinthe. Les objets Mur sont ensuite créés en fonction de leur position dans le labyrinthe, en utilisant les coordonnées de leurs coins supérieurs gauche et droit,
-* et les coordonnées de leurs coins inférieurs gauche et droit.
 * 
-* En résumé, la construction des murs dans la classe Labyrinthe se fait en parcourant la chaîne de caractères représentant le labyrinthe,
-* en créant des objets Mur pour les caractères de mur, et en reliant ces objets aux objets Case adjacents.
+* Le constructeur fournit donc le labyrinthe initialisé avec les positions et noms d'images, positions des gardiens, positions des boîtes, positions des marques,
+* positions des trésors, la position du chasseur et les positions des murs.
+*
+* Pour la construction des murs, on récupère le point de départ de chaque mur et le point de fin (qu’on peut deviner grâce au character « + »),
+* on fait la différence entre les murs verticaux et horizontaux grâce à l’attribut booléen « vertical » dans la structure représentant chaque mur : « WallPosition ».
+*
+* Les murs sont ensuite construit en utilisant les coordonnées des éléments de la liste wallPositions pour déterminer leur position dans le labyrinthe.
+*
 */
 Labyrinthe::Labyrinthe(char* fluxname) {
     int width  = 0;
